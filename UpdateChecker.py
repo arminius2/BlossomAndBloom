@@ -1,24 +1,26 @@
-from PyQt5.QtCore import QThread, pyqtSignal
 import requests
+import time
 
-class UpdateChecker(QThread):
+class UpdateChecker:
     signal = pyqtSignal('PyQt_PyObject')
     
-    def __init__(self, interval):
-        super().__init__()
+    def __init__(self, interval, current_version):
         self.interval = interval
-    
+        self.current_version = current_version
+
+    def check_update(self):
+        try:
+            response = requests.get("https://raw.githubusercontent.com/arminius2/BlossomAndBloom/main/version.txt")
+            latest_version = response.text.strip()
+            if latest_version != self.current_version:
+                print(f"New version available: {latest_version}")
+                self.new_version_signal.emit(latest_version)
+            else:
+                print("You are running the latest version.")
+        except Exception as e:
+            print(f"An error occurred while checking for updates: {e}")
+
     def run(self):
         while True:
-            # Check version
-            with open('/home/pi/BlossomApp/version.txt', 'r') as f:
-                current_version = f.read().strip()
-
-            response = requests.get("https://api.github.com/repos/arminius2/BlossomAndBloom/releases/latest")
-            latest_version = response.json().get('tag_name', '0.0.0')
-            
-            if latest_version != current_version:
-                self.signal.emit(True)
-            
-            # Sleep
-            QThread.sleep(self.interval)
+            self.check_update()
+            time.sleep(self.interval)

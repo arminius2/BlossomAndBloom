@@ -27,9 +27,13 @@ class BlossomApp(QWidget):
         
         self.streamButton.clicked.connect(self.toggle_stream)
         
-        self.update_checker = UpdateChecker(self.app_settings.settings['update_interval'])
-        self.update_checker.signal.connect(self.update_app)
-        self.update_checker.start()
+        with open("version.txt", "r") as f:
+            current_version = f.read().strip()
+
+        self.update_checker = UpdateChecker(app_settings.get_update_interval(), current_version)
+        self.update_thread = threading.Thread(target=update_checker.run)
+        self.update_thread.daemon = True
+        self.update_thread.start()
 
     def toggle_stream(self):
         if self.streaming:
@@ -51,7 +55,7 @@ class BlossomApp(QWidget):
                 
     def update_app(self, update_available):
         if update_available:
-            os.system('bash /home/pi/BlossomApp/install.sh')
+            os.system('sudo bash /home/pi/BlossomApp/install.sh')
             QApplication.quit()
 
 if __name__ == "__main__":

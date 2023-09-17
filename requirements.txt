@@ -1,3 +1,4 @@
 pylivestream
 qrcode[pil]
 PyGObject  # for GTK
+requests==2.26.0
