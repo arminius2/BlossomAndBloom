@@ -32,7 +32,7 @@ class BlossomApp(QWidget):
             current_version = f.read().strip()
 
         self.update_checker = UpdateChecker(self.app_settings.get_update_interval(), current_version)
-        self.update_thread = threading.Thread(target=update_checker.run)
+        self.update_thread = threading.Thread(target=self.update_checker.run)
         self.update_thread.daemon = True
         self.update_thread.start()
 
