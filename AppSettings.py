@@ -21,3 +21,6 @@ class AppSettings:
             os.makedirs('/home/pi/.config/BlossomApp/', exist_ok=True)
             with open(settings_file, 'w') as f:
                 json.dump(self.settings, f)
+
+    def get_update_interval(self):
+         return self.settings.get('update_interval', 3600)
