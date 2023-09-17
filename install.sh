@@ -107,5 +107,7 @@ if ! grep -q "Blossom.py" /etc/xdg/lxsession/LXDE-pi/autostart; then
 fi
 echo "Auto-open on boot set up."
 
+chmod u+s $(realpath "$0")
+
 # Done
 echo "Installation completed."
