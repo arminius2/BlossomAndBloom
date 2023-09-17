@@ -1,120 +1,61 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QTextEdit
-from PyQt5.QtCore import QTimer
-import requests
-import json
-import sys
-import subprocess
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
+from PyQt5.QtCore import Qt
+from AppSettings import AppSettings
+from UpdateChecker import UpdateChecker
+import os
 
-class AppSettings:
+class BlossomApp(QWidget):
+    
     def __init__(self):
-        self.filename = "settings.json"
-        self.load()
+        super(BlossomApp, self).__init__()
+        
+        self.app_settings = AppSettings()
 
-    def load(self):
-        try:
-            with open(self.filename, 'r') as f:
-                self.data = json.load(f)
-        except FileNotFoundError:
-            self.data = {
-                'youtube_api_key': "",
-                'stream_schedule': {'day': 'Saturday', 'start': '9:00', 'end': '9:45'},
-                'announcements_url': ""
-            }
-            self.save()
+        # GUI setup
+        self.setWindowTitle("Blossom and Bloom")
+        
+        layout = QVBoxLayout()
+        self.streamButton = QPushButton("Start Stream")
+        layout.addWidget(self.streamButton)
+        
+        self.label = QLabel("Stream Status: Not Started")
+        layout.addWidget(self.label)
+        
+        self.setLayout(layout)
+        
+        self.streaming = False
+        
+        self.streamButton.clicked.connect(self.toggle_stream)
+        
+        self.update_checker = UpdateChecker(self.app_settings.settings['update_interval'])
+        self.update_checker.signal.connect(self.update_app)
+        self.update_checker.start()
 
-    def save(self):
-        with open(self.filename, 'w') as f:
-            json.dump(self.data, f, indent=4)
-
-def execute_command(command):
-    try:
-        subprocess.run(command, shell=True, check=True)
-        return True
-    except subprocess.CalledProcessError as e:
-        print(f"Command failed: {e}")
-        return False
-
-class AppWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.settings = AppSettings()
-
-        # Read the current version from a file
-        with open("version.txt", "r") as f:
-            self.current_version = f.read().strip()
-
-        # Setup a timer to check for updates every hour
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.check_for_updates)
-        self.timer.start(60 * 60 * 1000)  # 1 hour in milliseconds
-
-        self.initUI()
-
-    def initUI(self):
-        # Initialize UI elements here
-        self.setGeometry(100, 100, 640, 480)
-        self.setWindowTitle('Blossom and Bloom')
-
-        self.text_edit = QTextEdit(self)
-        self.text_edit.setGeometry(50, 50, 400, 300)
-
-        self.start_button = QPushButton("Start Stream", self)
-        self.start_button.move(50, 400)
-        self.start_button.clicked.connect(self.start_stop_stream)
-
-        self.is_streaming = False
-
-        self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('Blossom and Bloom Streaming')
-        self.show()
-
-   def toggle_stream(self):
-        if self.is_streaming:
+    def toggle_stream(self):
+        if self.streaming:
             self.stop_stream()
         else:
             self.start_stream()
-
-   def start_stream(self):
-        # Using subprocess to start the PyLivestream
-        self.process = subprocess.Popen(["PyLivestream", "YouTubeLive.ini"])
-        print("Starting the stream...")
-        self.stream_button.setText('Stop Stream')
-        self.is_streaming = True
-
+        
+    def start_stream(self):
+        print("Stream started")
+        self.label.setText("Stream Status: Running")
+        self.streamButton.setText("Stop Stream")
+        self.streaming = True
+        
     def stop_stream(self):
-        # Terminating the PyLivestream process
-        self.process.terminate()
-        print("Stopping the stream...")
-        self.stream_button.setText('Start Stream')
-        self.is_streaming = False
+        print("Stream stopped")
+        self.label.setText("Stream Status: Not Started")
+        self.streamButton.setText("Start Stream")
+        self.streaming = False
+                
+    def update_app(self, update_available):
+        if update_available:
+            os.system('bash /home/pi/BlossomApp/install.sh')
+            QApplication.quit()
 
-
-    def check_for_updates(self):
-        try:
-            # Fetch the latest version from GitHub
-            response = requests.get("https://raw.githubusercontent.com/yourusername/yourrepo/main/version.txt")
-            latest_version = response.text.strip()
-
-            if self.current_version != latest_version:
-                self.update_app(latest_version)
-        except requests.RequestException:
-            print("Could not check for updates.")
-
-    def update_app(self, new_version):
-        print(f"Updating app to version {new_version}")
-
-        if not execute_command("git pull origin main"):
-            print("Failed to update code from repository.")
-            return
-
-        if execute_command("python3 Blossom.py"):
-            print("Successfully updated and restarted the app.")
-            self.close()
-        else:
-            print("Failed to restart the app.")
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = AppWindow()
-    ex.show()
-    sys.exit(app.exec_())
+if __name__ == "__main__":
+    app = QApplication([])
+    window = BlossomApp()
+    window.show()
+    app.exec_()
