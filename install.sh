@@ -15,7 +15,7 @@ fi
 
 # Update package list and install required packages
 apt-get update
-apt-get install -y python3 python3-pip git python3-pyqt5 pi-bluetooth
+apt-get install -y python3 python3-pip git python3-pyqt5 pi-bluetooth python3-bluez
 
 # Remove the existing app directory if it exists
 if [ -d "/home/pi/BlossomApp" ]; then

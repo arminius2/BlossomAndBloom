@@ -1,4 +1,3 @@
 pylivestream
 qrcode[pil]
-PyBluez  # for Bluetooth
 PyGObject  # for GTK
