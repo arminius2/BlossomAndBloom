@@ -62,9 +62,32 @@ class AppWindow(QMainWindow):
         self.start_button.move(50, 400)
         self.start_button.clicked.connect(self.start_stop_stream)
 
-    def start_stop_stream(self):
-        # Implement the logic to start/stop stream
-        pass
+        self.is_streaming = False
+
+        self.setGeometry(300, 300, 300, 200)
+        self.setWindowTitle('Blossom and Bloom Streaming')
+        self.show()
+
+   def toggle_stream(self):
+        if self.is_streaming:
+            self.stop_stream()
+        else:
+            self.start_stream()
+
+   def start_stream(self):
+        # Using subprocess to start the PyLivestream
+        self.process = subprocess.Popen(["PyLivestream", "YouTubeLive.ini"])
+        print("Starting the stream...")
+        self.stream_button.setText('Stop Stream')
+        self.is_streaming = True
+
+    def stop_stream(self):
+        # Terminating the PyLivestream process
+        self.process.terminate()
+        print("Stopping the stream...")
+        self.stream_button.setText('Start Stream')
+        self.is_streaming = False
+
 
     def check_for_updates(self):
         try:
