@@ -4,9 +4,6 @@ set -e  # Stop the script if any command fails
 
 echo "Starting Blossom and Bloom installation..."
 
-# Load the new version from the repository
-NEW_VERSION=$(cat /home/pi/BlossomApp/version.txt)
-
 # Check Python version
 echo "Checking Python version..."
 PYTHON_VERSION=$(python3 -c "import sys; print('{}.{}'.format(sys.version_info.major, sys.version_info.minor))")
@@ -50,6 +47,9 @@ echo "Repository cloned."
 
 # Navigate to the app directory
 cd /home/pi/BlossomApp
+
+# Load the new version from the repository
+NEW_VERSION=$(cat /home/pi/BlossomApp/version.txt)
 
 # Install dependencies
 echo "Installing Python dependencies..."
