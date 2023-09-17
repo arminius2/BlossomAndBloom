@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLa
 from PyQt5.QtCore import Qt, pyqtSignal
 from AppSettings import AppSettings
 from UpdateChecker import UpdateChecker
+import threading
 import os
 
 class BlossomApp(QWidget):
