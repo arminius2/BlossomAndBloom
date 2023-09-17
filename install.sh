@@ -1,5 +1,12 @@
 #!/bin/bash
 
+PYTHON_VERSION=$(python3 -c "import sys; print('{}.{}'.format(sys.version_info.major, sys.version_info.minor))")
+
+if [[ "$PYTHON_VERSION" < "3.7" ]]; then
+    echo "Python 3.7 or greater is required. Please upgrade."
+    exit 1
+fi
+
 # Check if running as superuser
 if [ "$EUID" -ne 0 ]; then
   echo "Please run as root"
@@ -10,7 +17,7 @@ fi
 apt-get update
 
 # Install required system packages
-apt-get install -y python3 python3-pip git
+apt-get install -y python3 python3-pip git python3-pyqt5
 
 # Remove the existing app directory if it exists
 if [ -d "/home/pi/BlossomApp" ]; then
@@ -24,7 +31,7 @@ git clone https://github.com/arminius2/BlossomAndBloom.git /home/pi/BlossomApp
 cd /home/pi/BlossomApp
 
 # Install required Python packages
-pip3 install PyQt5 requests Pylivestream
+pip3 install requests Pylivestream
 
 # Make Blossom.py executable
 chmod +x Blossom.py
@@ -32,13 +39,19 @@ chmod +x Blossom.py
 # Change owner of all files to 'pi' user
 chown -R pi:pi /home/pi/BlossomApp
 
-# Add desktop shortcut
-echo "[Desktop Entry]
-Type=Application
-Name=Blossom and Bloom
-Exec=python3 /home/pi/BlossomApp/Blossom.py
-Icon=/home/pi/BlossomApp/icon.png
-" > /home/pi/Desktop/BlossomAndBloom.desktop
+# Check if the shortcut is already present on the desktop
+if [ ! -f /home/pi/Desktop/BlossomApp.desktop ]; then
+  # Create a Desktop shortcut
+  echo "[Desktop Entry]
+  Version=1.0
+  Name=Blossom and Bloom
+  Comment=Start the Blossom and Bloom application
+  Exec=python3 /home/pi/BlossomApp/Blossom.py
+  Icon=/home/pi/BlossomApp/icon.png
+  Terminal=false
+  Type=Application
+  Categories=Utility;Application;" > /home/pi/Desktop/BlossomApp.desktop
+fi
 
 # Make it executable
 chmod +x /home/pi/Desktop/BlossomAndBloom.desktop
