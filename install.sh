@@ -52,7 +52,7 @@ if [ ! -f /home/pi/Desktop/BlossomApp.desktop ]; then
 fi
 
 # Make it executable
-chmod +x /home/pi/Desktop/BlossomAndBloom.desktop
+chmod +x /home/pi/Desktop/BlossomApp.desktop
 
 # Check if the app is already set to auto-open on boot
 if ! grep -q "Blossom.py" /etc/xdg/lxsession/LXDE-pi/autostart; then
