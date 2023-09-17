@@ -11,7 +11,7 @@ apt update && apt install -y python3 python3-pip git
 pip3 install PyQt5 requests
 
 # Clone your repo (replace with your actual repo URL)
-git clone https://github.com/yourusername/yourrepo.git /path/to/app/folder
+git clone https://github.com/arminius2/BlossomAndBloom.git /path/to/app/folder
 
 # Add a desktop shortcut
 echo "[Desktop Entry]
