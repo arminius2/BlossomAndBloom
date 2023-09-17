@@ -13,10 +13,8 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Update package list
+# Update package list and install required packages
 apt-get update
-
-# Install required system packages
 apt-get install -y python3 python3-pip git python3-pyqt5
 
 # Remove the existing app directory if it exists
@@ -30,8 +28,8 @@ git clone https://github.com/arminius2/BlossomAndBloom.git /home/pi/BlossomApp
 # Navigate to the app directory
 cd /home/pi/BlossomApp
 
-# Install required Python packages
-pip3 install requests Pylivestream
+# Install dependencies
+pip3 install -r /home/pi/BlossomApp/requirements.txt
 
 # Make Blossom.py executable
 chmod +x Blossom.py
