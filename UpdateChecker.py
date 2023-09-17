@@ -1,9 +1,10 @@
 import requests
 import time
+from PyQt5.QtCore import Qt, pyqtSignal
 
 class UpdateChecker:
     signal = pyqtSignal('PyQt_PyObject')
-    
+
     def __init__(self, interval, current_version):
         self.interval = interval
         self.current_version = current_version
