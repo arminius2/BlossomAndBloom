@@ -47,7 +47,8 @@ class StreamDevice:
         return max(info.get_resolution() for info in self.video_device_info)
 
 class StreamSource:
-    def __init__(self):
+    def __init__(self, app_settings):
+        self.app_settings = app_settings
         self.lock = threading.Lock()
         self.devices = self.find_stream_source()
 

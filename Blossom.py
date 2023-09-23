@@ -8,6 +8,7 @@ from PyLiveStreamManager import PyLiveStreamManager
 from StreamSource import StreamSource
 import threading
 import os
+import sys
 
 # Common base class for shared functionality
 class BlossomApplication:
@@ -62,19 +63,56 @@ class BlossomCLIApplication(BlossomApplication):
 
     def run(self):
         while True:
-            command = input("Enter 'start' to start the stream, 'stop' to stop the stream, 'settings' to view app settings, 'check-update' to check for updates, or 'update' to perform update: ")
-            if command == 'start':
-                self.start_stream()
-            elif command == 'stop':
-                self.stop_stream()
-            elif command == 'settings':
+            self.show_menu()
+            choice = input("Enter your choice: ").strip().lower()
+
+            if choice.endswith(' -h'):
+                command = choice[:-3]  # Remove ' -h' to get the actual command
+                self.show_help_for_command(command)
+                continue
+
+            if choice == 'start':
+                self.start_command()
+            elif choice == 'stop':
+                self.stop_command()
+            elif choice == 'settings':
                 self.print_app_settings()
-            elif command == 'check-update':
+            elif choice == 'check-update':
                 self.check_for_update()
-            elif command == 'update':
+            elif choice == 'update':
                 self.update_app()
+            elif choice == 'list-sources':
+                self.print_stream_sources()                
+            elif choice == "exit":
+                print("Exiting...")
+                sys.exit(0)  # This will terminate the application            
             else:
                 print("Invalid command")
+
+    def show_menu(self):
+        print("\n===== Blossom CLI Menu =====")
+        print("{:<15} {:<40}".format("Command", "Description"))
+        print("=" * 55)
+        print("{:<15} {:<40}".format("start", "Start the Blossom application"))
+        print("{:<15} {:<40}".format("stop", "Stop the Blossom application"))
+        print("{:<15} {:<40}".format("settings", "Open the settings menu"))
+        print("{:<15} {:<40}".format("check-update", "Check for updates"))
+        print("{:<15} {:<40}".format("update", "Update the Blossom application"))
+        print("{:<15} {:<40}".format("list-sources", "List available stream sources"))
+        print("{:<15} {:<40}".format("exit", "Exit the application"))
+        print("=" * 55)
+
+    def print_stream_sources(self):
+        print("Fetching available stream sources...")
+        self.stream_source_manager.print_all_devices()  # Assuming this method exists in your StreamSource class and prints all the stream sources.        
+
+    def start_command(self):
+        print("Starting the Blossom application...")
+        self.start_stream()
+
+    def stop_command(self):
+        print("Stopping the Blossom application...")
+        self.stop_stream()
 
     def print_app_settings(self):
         print("Application Settings:")
@@ -83,6 +121,7 @@ class BlossomCLIApplication(BlossomApplication):
         # Add more settings here as needed
 
     def check_for_update(self):
+        print("Checking for updates...")
         update_available = self.update_checker.check_for_update()
         if update_available:
             print("An update is available.")
@@ -97,6 +136,38 @@ class BlossomCLIApplication(BlossomApplication):
             print("Update complete.")
         else:
             print("You are running the latest version, no update required.")        
+
+    def show_help_for_command(self, command):
+        help_methods = {
+            'start': self.help_start_command,
+            'stop': self.help_stop_command,
+            'settings': self.help_settings_command,
+            'check-update': self.help_check_update_command,
+            'update': self.help_update_command,
+            'list-sources': self.help_list_sources_command,
+        }
+        if command in help_methods:
+            help_methods[command]()
+        else:
+            print(f"No help topic for '{command}'")
+
+    def help_start_command(self):
+        print("Help topic for Start: Starts the Blossom application.")
+
+    def help_stop_command(self):
+        print("Help topic for Stop: Stops the Blossom application.")
+
+    def help_settings_command(self):
+        print("Help topic for Settings: Opens the settings menu to configure the application.")
+
+    def help_check_update_command(self):
+        print("Help topic for Check-Update: Checks for available updates.")
+
+    def help_update_command(self):
+        print("Help topic for Update: Updates the Blossom application to the latest version.")
+
+    def help_list_sources_command(self):
+        print("Help topic for List-Sources: Lists all the available stream sources.")
 
 def main():
     # Create argument parser
