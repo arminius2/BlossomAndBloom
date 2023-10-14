@@ -1,7 +1,0 @@
-pylivestream
-qrcode[pil]
-PyGObject  # for GTK
-requests==2.26.0
-psutil
-opencv-python==4.5.3.56
-argparse
