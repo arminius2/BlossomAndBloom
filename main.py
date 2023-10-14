@@ -1,34 +1,79 @@
 import os
 import subprocess
+import threading
+import requests
+import keyboard
+from util.version_check import check_version
 import youtube_stream
 
-from util.version_check import check_version
+streaming_pid = None  # Store the PID for the streaming process
 
-def check_version():
-    # This is where we'd normally use the function from version_check.py
-    # For demonstration, let's just print a message
-    print("Checking version...")
-    check_version()
+def check_internet_connection():
+    print("Checking internet connection...")
+    while True:
+        try:
+            requests.get('https://www.youtube.com', timeout=5)
+            print("Internet connection available.")
+            break
+        except requests.ConnectionError:
+            print("No internet connection. Retrying in 5 seconds...")
+            time.sleep(5)
 
-def execute_ffmpeg_command():
-    # This is where we'd normally use the function from ffmpeg_command.py
-    # For demonstration, let's just print a message
-    print("Executing FFmpeg command...")
+def toggle_youtube_stream(e):
+    global streaming_pid
+    if streaming_pid is None:
+        start_youtube_stream()
+    else:
+        stop_youtube_stream()
+
+def start_youtube_stream():
+    global streaming_pid
+    if streaming_pid is not None:
+        print("Stream already running.")
+        return
+
+    # Start youtube_stream.py in a new thread
+    stream_thread = threading.Thread(target=youtube_stream.start_stream)
+    stream_thread.start()
+
+    # Stash the thread's PID (for demonstration)
+    streaming_pid = stream_thread.ident
+
+def stop_youtube_stream():
+    global streaming_pid
+    if streaming_pid is None:
+        print("No stream is running.")
+        return
+
+    # Stop the streaming process
+    youtube_stream.stop_stream()
+    streaming_pid = None
 
 def launch_gui():
-    # This is where we'd normally launch the GUI
-    # For demonstration, let's just print a message
     print("Launching GUI...")
 
+def setup_appletv_remote():
+    print("Setting up AppleTV remote...")
+
+def run():
+    print("Running...")
+    keyboard.on_press_key("space", toggle_youtube_stream)
+
 def main():
+    # Check internet connection first, block until it's available
+    check_internet_connection()
+
     # Check if the current version matches the GitHub version
     check_version()
-    
-    # Initialize modules like pyatv and start FFmpeg command for YouTube streaming
-    execute_ffmpeg_command()
 
     # Launch the GUI
     launch_gui()
+
+    # Setup AppleTV remote
+    setup_appletv_remote()
+
+    # Start the main loop
+    run()
 
 if __name__ == "__main__":
     main()
