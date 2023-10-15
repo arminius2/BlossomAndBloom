@@ -4,3 +4,5 @@ pyobjc
 pyobjc-framework-Quartz
 pyobjc-framework-Cocoa 
 pyobjc-framework-WebKit
+zeroconf
+httpserver

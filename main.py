@@ -6,6 +6,8 @@ import keyring
 import time
 from util.version_check import check_version
 import youtube_stream
+from zeroconf import ServiceInfo, Zeroconf
+from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 streaming_pid = None  # Store the PID for the streaming process
 
@@ -69,9 +71,25 @@ def main():
     # Check if the current version matches the GitHub version
     check_version()
 
-    # EXECUTE
+    # Setup canva viewer
     subprocess.run(["killall", "-9", "Firefox"])
     subprocess.run(["/Applications/Firefox.app/Contents/MacOS/firefox","-kiosk","https://www.canva.com/design/DAFsgM9Xi3A/Hsku1dC2x83Us3gMe25DWw/view?utm_content=DAFsgM9Xi3A&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink"])
+
+    PORT=80
+
+    zeroconf = Zeroconf()
+    wsInfo = ServiceInfo('_http._tcp.local.',
+                     "blossomandbloom._http._tcp.local.",
+                     PORT, 0, 0, None)
+    zeroconf.register_service(wsInfo)
+
+    server_address = ('', 80)
+    httpd = server_class(server_address, SimpleHTTPRequestHandler)
+    httpd.serve_forever()
+
+import time
+time.sleep(1000);
+
 
 
 if __name__ == "__main__":
