@@ -6,7 +6,6 @@ import keyring
 import time
 from util.version_check import check_version
 import youtube_stream
-from main_gui import run_main_gui
 
 streaming_pid = None  # Store the PID for the streaming process
 
