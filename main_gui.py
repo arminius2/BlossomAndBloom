@@ -6,6 +6,8 @@ import youtube_stream
 import objc
 
 class AppDelegate(NSObject):
+    window = objc.ivar()
+
     def __init__(self):
         self.window = None
 
