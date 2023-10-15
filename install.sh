@@ -20,6 +20,7 @@ sudo -u $(logname) pip3 install --user -r dependencies.txt
 
 # Move the directory to the user's home directory
 mv $install_dir $HOME/.blossomandbloom
+install_dir="$HOME/.blossomandbloom"
 
 # Create LaunchAgents directory if it doesn't exist
 launch_agents_dir="$HOME/Library/LaunchAgents"
@@ -56,17 +57,8 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 chmod 644 $plist_path
 chown $(logname):$(id -gn $(logname)) $plist_path
 
-# Move the plist into place and set its ownership
-cp com.blossomandbloom.app.plist $plist_path
-chown $(logname):$(id -gn $(logname)) $plist_path
-
 # Load the new launch agent
 sudo -u $(logname) launchctl bootstrap gui/$(id -u $(logname)) "$plist_path"
-
-# Change ownership of the entire installation to the non-root user
-chown -R $(logname):$(id -gn $(logname)) $HOME/.blossomandbloom
-
-echo "Installation complete."
 
 # Check if YouTube stream key is set
 youtube_key=$(keyring get BlossomAndBloom YouTubeStream)
@@ -79,7 +71,7 @@ if [ -z "$youtube_key" ]; then
   python3 -c "import keyring; keyring.set_password('BlossomAndBloom', 'YouTubeStream', '$stream_key')"
 fi
 
-# Change ownership to the non-root user
+# Change ownership of the entire installation to the non-root user
 chown -R $(logname):$(id -gn $(logname)) $install_dir
 
 echo "Installation complete."
