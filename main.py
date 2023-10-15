@@ -2,13 +2,21 @@ import os
 import subprocess
 import threading
 import requests
-import keyboard
+import keyring
 import time
 from util.version_check import check_version
 import youtube_stream
+from main_gui import run_main_gui
 
 streaming_pid = None  # Store the PID for the streaming process
-thread_running = 1
+
+def check_stream_key():
+    stream_key = keyring.get_password('BlossomAndBloom', 'YouTubeStream')
+    if stream_key is None:
+        print("No YouTube stream key is set.")
+        return False
+    else:
+        return True
 
 def check_internet_connection():
     print("Checking internet connection...")
@@ -23,6 +31,10 @@ def check_internet_connection():
 
 def toggle_youtube_stream():
     global streaming_pid
+    if not check_stream_key():
+        print("No YouTube stream key set.")
+        return
+
     if streaming_pid is None:
         start_youtube_stream()
     else:
@@ -51,16 +63,6 @@ def stop_youtube_stream():
     youtube_stream.stop_stream()
     streaming_pid = None
 
-def launch_gui():
-    print("Launching GUI...")
-
-def setup_appletv_remote():
-    print("Setting up AppleTV remote...")
-
-def exit():
-    global thread_running
-    thread_running = 0
-
 def main():
     # Check internet connection first, block until it's available
     check_internet_connection()
@@ -68,16 +70,8 @@ def main():
     # Check if the current version matches the GitHub version
     check_version()
 
-    # Launch the GUI
-    launch_gui()
-
-    keyboard.on_press_key("space", toggle_youtube_stream)
-    keyboard.on_press_key("q", exit)
-
-    global thread_running
-    while thread_running:
-      time.sleep(0.1)
-
+    # EXECUTE
+    run_main_gui()
 
 
 if __name__ == "__main__":
