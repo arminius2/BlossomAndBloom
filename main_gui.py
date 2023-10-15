@@ -8,43 +8,47 @@ import objc
 class AppDelegate(NSObject):
 
     def applicationDidFinishLaunching_(self, aNotification):
-        screenFrame = NSScreen.mainScreen().frame()
+        if self.window is None:
+            # Existing code for window and webView setup goes here
+            screenFrame = NSScreen.mainScreen().frame()
 
-        self.window = NSWindow.alloc().initWithContentRect_styleMask_backing_defer_(
-            screenFrame,
-            NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable,
-            NSBackingStoreBuffered,
-            False
-        )
-        self.window.setTitle_("BlossomAndBloom")
-        self.window.setBackgroundColor_(NSColor.blackColor())
-        self.window.setOpaque_(True)
-        self.window.setHidesOnDeactivate_(True)
+            self.window = NSWindow.alloc().initWithContentRect_styleMask_backing_defer_(
+                screenFrame,
+                NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable,
+                NSBackingStoreBuffered,
+                False
+            )
+            self.window.setTitle_("BlossomAndBloom")
+            self.window.setBackgroundColor_(NSColor.blackColor())
 
-        web_config = WKWebViewConfiguration.alloc().init()
-        self.webView = WKWebView.alloc().initWithFrame_configuration_(screenFrame, web_config)
-        self.webView.setCustomUserAgent_("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15")
-        
-        request = NSURLRequest.requestWithURL_(NSURL.URLWithString_("https://www.canva.com/design/DAFsgM9Xi3A/Hsku1dC2x83Us3gMe25DWw/view?utm_content=DAFsgM9Xi3A&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink"))
-        self.webView.loadRequest_(request)
+            web_config = WKWebViewConfiguration.alloc().init()
+            self.webView = WKWebView.alloc().initWithFrame_configuration_(screenFrame, web_config)
+            self.webView.setCustomUserAgent_("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15")
 
-        self.window.contentView().addSubview_(self.webView)
+            navigationDelegate = MyWKNavigationDelegate.alloc().init()
+            self.webView.setNavigationDelegate_(navigationDelegate)
 
-        self.startStopButton = NSButton.alloc().initWithFrame_(NSMakeRect(20, 20, 100, 40))
-        self.startStopButton.setTitle_("Start")
-        self.startStopButton.setTarget_(self)
-        self.startStopButton.setAction_("toggleStream:")
-        
-        self.window.contentView().addSubview_(self.startStopButton)
+            request = NSURLRequest.requestWithURL_(NSURL.URLWithString_("https://www.canva.com/"))
+            self.webView.loadRequest_(request)
+            self.window.contentView().addSubview_(self.webView)
 
-        self.statusTextField = NSTextField.alloc().initWithFrame_(NSMakeRect(0, 0, screenFrame.size.width, 20))
-        self.statusTextField.setAlignment_(NSCenterTextAlignment)
-        self.statusTextField.setBackgroundColor_(NSColor.blackColor())
-        self.statusTextField.setTextColor_(NSColor.whiteColor())
-        
-        self.window.contentView().addSubview_(self.statusTextField)
-        
-        self.window.makeKeyAndOrderFront_(self.window)
+            self.startStopButton = NSButton.alloc().initWithFrame_(NSMakeRect(20, 20, 100, 40))
+            self.startStopButton.setTitle_("Start")
+            self.startStopButton.setTarget_(self)
+            self.startStopButton.setAction_("toggleStream:")
+            
+            self.window.contentView().addSubview_(self.startStopButton)
+
+            self.statusTextField = NSTextField.alloc().initWithFrame_(NSMakeRect(0, 0, screenFrame.size.width, 20))
+            self.statusTextField.setAlignment_(NSCenterTextAlignment)
+            self.statusTextField.setBackgroundColor_(NSColor.blackColor())
+            self.statusTextField.setTextColor_(NSColor.whiteColor())
+            
+            self.window.contentView().addSubview_(self.statusTextField)
+
+            self.window.makeKeyAndOrderFront_(None)
+        else:
+            return        
 
     def toggleStream_(self, sender):
         if youtube_stream.is_streaming:
