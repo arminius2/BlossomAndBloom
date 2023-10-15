@@ -18,9 +18,8 @@ cd $install_dir
 # Run pip3 as the current user to install Python dependencies
 sudo -u $(logname) pip3 install --user -r dependencies.txt
 
-# Move the directory to the user's home directory
-mv $install_dir $HOME/.blossomandbloom
-install_dir="$HOME/.blossomandbloom"
+# Sync the contents of the temporary directory to the user's home directory
+rsync -av --delete $install_dir/ $HOME/.blossomandbloom/
 
 # Create LaunchAgents directory if it doesn't exist
 launch_agents_dir="$HOME/Library/LaunchAgents"
@@ -46,7 +45,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
   <key>ProgramArguments</key>
   <array>
     <string>/usr/bin/python3</string>
-    <string>$install_dir/main.py</string>
+    <string>$HOME/.blossomandbloom/main.py</string>
   </array>
   <key>RunAtLoad</key>
   <true/>
@@ -72,6 +71,9 @@ if [ -z "$youtube_key" ]; then
 fi
 
 # Change ownership of the entire installation to the non-root user
-chown -R $(logname):$(id -gn $(logname)) $install_dir
+chown -R $(logname):$(id -gn $(logname)) $HOME/.blossomandbloom
+
+# Remove the temporary directory
+rm -rf $install_dir
 
 echo "Installation complete."
