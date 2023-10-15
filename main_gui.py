@@ -23,7 +23,7 @@ class AppDelegate(NSObject):
         self.window.setBackgroundColor_(NSColor.blackColor())
         self.window.setOpaque_(True)
         self.window.setHidesOnDeactivate_(True)
-        self.window.setLevel_(NSMainMenuWindowLevel + 2)
+        self.window.setLevel_(20)  # Numeric constant for NSMainMenuWindowLevel
 
         web_config = WKWebViewConfiguration.alloc().init()
         web_config.preferences.setValue_forKey_(True, "developerExtrasEnabled")
