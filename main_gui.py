@@ -37,7 +37,7 @@ class AppDelegate(NSObject):
         self.startStopButton = NSButton.alloc().initWithFrame_(NSMakeRect(20, 20, 100, 40))
         self.startStopButton.setTitle_("Start")
         self.startStopButton.setTarget_(self)
-        self.startStopButton.setAction_(self.toggleStream_)
+        self.startStopButton.setAction_("toggleStream:")
         
         self.window.contentView().addSubview_(self.startStopButton)
 
@@ -50,7 +50,7 @@ class AppDelegate(NSObject):
         
         self.window.makeKeyAndOrderFront_(self.window)
 
-    @objc.python_method
+    @objc.IBAction
     def toggleStream_(self):
         if youtube_stream.is_streaming:
             youtube_stream.stop_stream()
