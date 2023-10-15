@@ -1,4 +1,4 @@
-keyboard
 requests
 keyring
 pyobjc
+pyobjc-framework-Quartz

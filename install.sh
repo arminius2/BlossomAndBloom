@@ -6,30 +6,54 @@ if [ "$EUID" -ne 0 ]; then
   exit
 fi
 
-# Define install directory
+# Generate a UUID for a temporary directory
+uuid=$(uuidgen)
+tmp_dir="/tmp/blossomandbloom-$uuid"
+
+# Clone the GitHub repository into the temporary directory
+git clone https://github.com/arminius2/BlossomAndBloom.git $tmp_dir || exit 1
+
+# Define the install directory
 install_dir="$HOME/.blossomandbloom"
 
-# Check if the directory exists
-if [ ! -d "$install_dir" ]; then
-    mkdir "$install_dir"
-fi
-
-# Clone the GitHub repository into ~/.blossomandbloom
-git clone https://github.com/arminius2/BlossomAndBloom.git $install_dir
+# Move from temporary directory to install directory
+mv $tmp_dir $install_dir
 
 # Navigate to the project directory
-cd $install_dir
+cd $install_dir || exit 1
 
 # Install Python dependencies
-pip3 install -r "$install_dir/dependencies.txt"
+pip3 install -r dependencies.txt
 
-# Add the main script to run at login on macOS
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  osascript -e "tell application \"System Events\" to make login item at end with properties {path:\"$install_dir/main.py\", hidden:false}"
-fi
+# Create a .plist file for launchd
+plist_path=~/Library/LaunchAgents/com.blossomandbloom.plist
 
-# Set the sticky bit on install.sh
-chmod +t $install_dir/install.sh
+# Unload the existing agent, if present
+launchctl bootout gui/$(id -u $(logname)) $plist_path || echo "No existing agent to unload."
+
+# Create the new .plist content
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+  <key>Label</key>
+  <string>com.blossomandbloom</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/python3</string>
+    <string>$install_dir/main.py</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
+</plist>" > $plist_path
+
+# Set ownership and permissions
+chmod 644 $plist_path
+chown $(logname):$(id -gn $(logname)) $plist_path
+
+# Load the new agent
+launchctl bootstrap gui/$(id -u $(logname)) $plist_path
 
 # Check if YouTube stream key is set
 youtube_key=$(keyring get BlossomAndBloom YouTubeStream)
