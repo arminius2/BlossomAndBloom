@@ -7,6 +7,7 @@ from util.version_check import check_version
 import youtube_stream
 
 streaming_pid = None  # Store the PID for the streaming process
+thread_running = 0
 
 def check_internet_connection():
     print("Checking internet connection...")
