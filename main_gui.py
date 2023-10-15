@@ -1,11 +1,12 @@
 from PyObjCTools import AppHelper
-from Cocoa import (NSApplication, NSApp, NSWindow, NSButton, WKWebView, WKWebViewConfiguration,
+from Cocoa import (NSApplication, NSApp, NSWindow, NSButton,
                    NSURLRequest, NSNotificationCenter, NSMakeRect, NSBackingStoreBuffered,
                    NSWindowStyleMaskTitled, NSWindowStyleMaskClosable, NSWindowStyleMaskResizable,
                    NSColor, NSTextField, NSCenterTextAlignment, NSScreen)
 from Quartz import kCGColorRed
 from AppKit import NSMainMenuWindowLevel
 from Foundation import NSObject, NSLog
+from WebKit import WKWebView, WKWebViewConfiguration
 import youtube_stream
 import objc
 
