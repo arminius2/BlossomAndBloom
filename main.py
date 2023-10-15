@@ -71,6 +71,7 @@ def main():
     check_version()
 
     # EXECUTE
+    subprocess.run(["killall", "-9", "Firefox"])
     subprocess.run(["/Applications/Firefox.app/Contents/MacOS/firefox","-kiosk","https://www.canva.com/design/DAFsgM9Xi3A/Hsku1dC2x83Us3gMe25DWw/view?utm_content=DAFsgM9Xi3A&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink"])
 
 
