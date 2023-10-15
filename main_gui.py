@@ -6,6 +6,8 @@ import youtube_stream
 import objc
 
 class AppDelegate(NSObject):
+    def __init__(self):
+        self.window = None
 
     def applicationDidFinishLaunching_(self, aNotification):
         if self.window is None:
