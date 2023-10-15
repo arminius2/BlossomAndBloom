@@ -86,9 +86,8 @@ def main():
     server_address = ('', 80)
     httpd = server_class(server_address, SimpleHTTPRequestHandler)
     httpd.serve_forever()
-
-import time
-time.sleep(1000);
+    while true:
+        time.sleep(100);
 
 
 
