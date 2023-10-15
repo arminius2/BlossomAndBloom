@@ -5,6 +5,10 @@ from WebKit import *
 import youtube_stream
 import objc
 
+class MyWKNavigationDelegate(NSObject):
+    def webView_decidePolicyForNavigationAction_decisionHandler_(self, webview, navigationAction, decisionHandler):
+        decisionHandler(WKNavigationActionPolicyAllow)
+        
 class AppDelegate(NSObject):
     window = objc.ivar()
 
