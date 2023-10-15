@@ -19,7 +19,7 @@ def check_internet_connection():
             print("No internet connection. Retrying in 5 seconds...")
             time.sleep(5)
 
-def toggle_youtube_stream(e):
+def toggle_youtube_stream():
     global streaming_pid
     if streaming_pid is None:
         start_youtube_stream()
@@ -55,9 +55,9 @@ def launch_gui():
 def setup_appletv_remote():
     print("Setting up AppleTV remote...")
 
-def run():
-    print("Running...")
-    keyboard.on_press_key("space", toggle_youtube_stream)
+def exit():
+    global thread_running
+    thread_running = 0
 
 def main():
     # Check internet connection first, block until it's available
@@ -69,11 +69,14 @@ def main():
     # Launch the GUI
     launch_gui()
 
-    # Setup AppleTV remote
-    setup_appletv_remote()
+    keyboard.on_press_key("space", toggle_youtube_stream)
+    keyboard.on_press_key("q", exit)
 
-    # Start the main loop
-    run()
+    global thread_running
+    while thread_running:
+      time.sleep(0.1)
+
+
 
 if __name__ == "__main__":
     main()
