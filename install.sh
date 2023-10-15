@@ -43,6 +43,6 @@ if [ -z "$youtube_key" ]; then
 fi
 
 # Change ownership to the non-root user
-chown -R $(logname):$(logname) $install_dir
+chown -R $(logname):$(id -gn $(logname)) $install_dir
 
 echo "Installation complete."
