@@ -27,7 +27,8 @@ class MainWindowController(NSWindowController):
 
         self.webView = WKWebView.alloc().initWithFrame_(screenFrame)
         self.webView.setNavigationDelegate_(MyWKNavigationDelegate.alloc().init())
-        request = NSURLRequest.requestWithURL_(NSURL.URLWithString_("https://www.canva.com/"))
+        self.webView.setCustomUserAgent_("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15")
+        request = NSURLRequest.requestWithURL_(NSURL.URLWithString_("https://www.canva.com/design/DAFsgM9Xi3A/Hsku1dC2x83Us3gMe25DWw/view?utm_content=DAFsgM9Xi3A&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink"))
         self.webView.loadRequest_(request)
         self.window.contentView().addSubview_(self.webView)
 
@@ -76,3 +77,4 @@ def run_main_gui():
 
 if __name__ == "__main__":
     run_main_gui()
+    
