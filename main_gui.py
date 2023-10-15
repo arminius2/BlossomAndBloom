@@ -1,4 +1,5 @@
-from Cocoa import NSScreen, NSApplication, NSApp, NSWindow, NSButton, NSMakeRect, NSBackingStoreBuffered, WKWebView, NSURLRequest, NSURL
+from Cocoa import NSScreen, NSApplication, NSApp, NSWindow, NSButton, NSMakeRect, NSBackingStoreBuffered, NSURLRequest, NSURL
+from WebKit import WKWebView
 
 def run_main_gui():
     app = NSApplication.sharedApplication()

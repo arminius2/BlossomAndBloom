@@ -2,3 +2,5 @@ requests
 keyring
 pyobjc
 pyobjc-framework-Quartz
+pyobjc-framework-Cocoa 
+pyobjc-framework-WebKit
