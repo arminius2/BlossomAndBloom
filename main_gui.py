@@ -46,9 +46,13 @@ class MainWindowController(NSWindowController):
 
     def toggleStream_(self, sender):
         if self.startStopButton.title() == "Start":
-            self.delegate.startStream()
+            youtube_stream.start_stream()
+            self.startStopButton().setTitle_("Start")
+            self.statusTextField().setStringValue_("Stream stopped.")
         else:
-            self.delegate.stopStream()
+            youtube_stream.stop_stream()
+            self.startStopButton().setTitle_("Stop")
+            self.statusTextField().setStringValue_("Stream started.")                        
 
 class AppDelegate(NSObject):
     mainWindowController = objc.ivar()
@@ -56,18 +60,7 @@ class AppDelegate(NSObject):
     def applicationDidFinishLaunching_(self, aNotification):
         if self.mainWindowController is None:
             self.mainWindowController = MainWindowController.alloc().init()
-            self.mainWindowController.setDelegate_(self)
         self.mainWindowController.showWindow_(self)
-
-    def startStream(self):
-        youtube_stream.start_stream()
-        self.mainWindowController.startStopButton().setTitle_("Stop")
-        self.mainWindowController.statusTextField().setStringValue_("Stream started.")
-
-    def stopStream(self):
-        youtube_stream.stop_stream()
-        self.mainWindowController.startStopButton().setTitle_("Start")
-        self.mainWindowController.statusTextField().setStringValue_("Stream stopped.")
 
 def run_main_gui():
     app = NSApplication.sharedApplication()
