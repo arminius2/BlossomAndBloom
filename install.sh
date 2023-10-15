@@ -6,30 +6,34 @@ if [ "$EUID" -ne 0 ]; then
   exit
 fi
 
-# Generate a UUID for a temporary directory
-uuid=$(uuidgen)
-tmp_dir="/tmp/blossomandbloom-$uuid"
+# Generate a temporary directory
+install_dir="/tmp/blossomandbloom-$(uuidgen)"
 
 # Clone the GitHub repository into the temporary directory
-git clone https://github.com/arminius2/BlossomAndBloom.git $tmp_dir || exit 1
-
-# Define the install directory
-install_dir="$HOME/.blossomandbloom"
-
-# Move from temporary directory to install directory
-mv $tmp_dir $install_dir
+git clone https://github.com/arminius2/BlossomAndBloom.git $install_dir
 
 # Navigate to the project directory
-cd $install_dir || exit 1
+cd $install_dir
 
-# Install Python dependencies
-pip3 install -r dependencies.txt
+# Run pip3 as the current user to install Python dependencies
+sudo -u $(logname) pip3 install --user -r dependencies.txt
 
-# Create a .plist file for launchd
-plist_path=~/Library/LaunchAgents/com.blossomandbloom.plist
+# Move the directory to the user's home directory
+mv $install_dir $HOME/.blossomandbloom
 
-# Unload the existing agent, if present
-launchctl bootout gui/$(id -u $(logname)) $plist_path || echo "No existing agent to unload."
+# Create LaunchAgents directory if it doesn't exist
+launch_agents_dir="$HOME/Library/LaunchAgents"
+if [ ! -d "$launch_agents_dir" ]; then
+  sudo -u $(logname) mkdir -p "$launch_agents_dir"
+fi
+
+# Create Launch Agent plist file
+plist_path="$launch_agents_dir/com.blossomandbloom.app.plist"
+
+# Unload existing launch agent if it exists
+if [ -f "$plist_path" ]; then
+  sudo -u $(logname) launchctl bootout gui/$(id -u $(logname)) "$plist_path"
+fi
 
 # Create the new .plist content
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -52,8 +56,17 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 chmod 644 $plist_path
 chown $(logname):$(id -gn $(logname)) $plist_path
 
-# Load the new agent
-launchctl bootstrap gui/$(id -u $(logname)) $plist_path
+# Move the plist into place and set its ownership
+cp com.blossomandbloom.app.plist $plist_path
+chown $(logname):$(id -gn $(logname)) $plist_path
+
+# Load the new launch agent
+sudo -u $(logname) launchctl bootstrap gui/$(id -u $(logname)) "$plist_path"
+
+# Change ownership of the entire installation to the non-root user
+chown -R $(logname):$(id -gn $(logname)) $HOME/.blossomandbloom
+
+echo "Installation complete."
 
 # Check if YouTube stream key is set
 youtube_key=$(keyring get BlossomAndBloom YouTubeStream)
