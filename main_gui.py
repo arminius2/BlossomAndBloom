@@ -76,6 +76,12 @@ class AppDelegate(NSObject):
         # Add blinking red circle and other elements when the stream starts
         # (You can add code here or listen for the "StartStream" notification in another part of the code)
 
+def run_main_gui():
+    app = NSApplication.sharedApplication()
+    delegate = AppDelegate.alloc().init()
+    app.setDelegate_(delegate)
+    AppHelper.runEventLoop()
+
 if __name__ == "__main__":
     app = NSApplication.sharedApplication()
     delegate = AppDelegate.alloc().init()
