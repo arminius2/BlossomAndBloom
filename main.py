@@ -8,14 +8,11 @@ import time
 import signal
 import daemon
 from util.version_check import check_version
-import youtube_stream
 from zeroconf import ServiceInfo, Zeroconf
 from httpserver import run_http_server
 
 def handle_exit(signum, frame):
     print("Received termination signal. Exiting...")
-    if streaming_pid is not None:
-        stop_youtube_stream()
     os._exit(0)
 
 def check_stream_key():
