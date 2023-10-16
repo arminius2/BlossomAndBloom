@@ -1,9 +1,9 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from main import toggle_youtube_stream, streaming_pid
 import youtube_stream
 
 class MyHTTPHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        from main import streaming_pid
         global streaming_pid  # This should be a shared variable with main.py
         self.send_response(200)
         self.send_header("Content-type", "text/html")
@@ -17,6 +17,7 @@ class MyHTTPHandler(BaseHTTPRequestHandler):
         self.wfile.write(f"<html><body><a href='/toggle'>{message}</a></body></html>".encode('utf-8'))
 
     def do_POST(self):
+        from main import toggle_youtube_stream
         self.send_response(200)
         if self.path == "/toggle":
             toggle_youtube_stream()  # This function should be accessible from here
