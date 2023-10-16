@@ -30,9 +30,11 @@ def stop_youtube_stream():
 
     youtube_stream.stop_stream()
     streaming_pid = None
-    
+
 class MyHTTPHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        print("Received GET request:" + self.path)
+
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
@@ -45,6 +47,7 @@ class MyHTTPHandler(BaseHTTPRequestHandler):
         self.wfile.write(f"<html><body><a href='/toggle'>{message}</a></body></html>".encode('utf-8'))
 
     def do_POST(self):
+        print("Received POST request:" + self.path)
         self.send_response(200)
         if self.path == "/toggle":
             toggle_youtube_stream()
