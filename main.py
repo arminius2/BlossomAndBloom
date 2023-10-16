@@ -74,7 +74,9 @@ def start_firefox():
 
 def setup_zeroconf(PORT):
     zeroconf = Zeroconf()
-    wsInfo = ServiceInfo('_http._tcp.local.', "blossomandbloom._http._tcp.local.", PORT, 0, 0, {})
+    wsInfo = ServiceInfo('_http._tcp.local.',
+                 "blossomandbloom._http._tcp.local.",
+                 PORT, 0, 0, None)
     zeroconf.register_service(wsInfo)
 
 def main():
