@@ -47,6 +47,10 @@ class MyHTTPHandler(BaseHTTPRequestHandler):
             self.send_response(303)  # 303 See Other
             self.send_header('Location', '/')
             self.end_headers()
+            if streaming:
+                start_youtube_stream()
+            else:
+                stop_youtube_stream()
         
         # Otherwise, just display the state
         else:
@@ -54,8 +58,9 @@ class MyHTTPHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
 
-            message = f"Streaming is {'ON' if streaming else 'OFF'}"
+            message = f"<html><body>Streaming is {'ON' if streaming else 'OFF'}<br><a href='/toggle'>Toggle Stream</a></body></html>"
             self.wfile.write(message.encode('utf-8'))
+
 
 def run_http_server(PORT):
     server_address = ('', PORT)
