@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-  if args.daemon:
+    if args.daemon:
         # Run as a daemon
         with daemon.DaemonContext(
             working_directory=os.getcwd(),
