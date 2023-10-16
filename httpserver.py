@@ -1,4 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from main import toggle_youtube_stream, streaming_pid
 import youtube_stream
 
 class MyHTTPHandler(BaseHTTPRequestHandler):
@@ -21,7 +22,7 @@ class MyHTTPHandler(BaseHTTPRequestHandler):
             toggle_youtube_stream()  # This function should be accessible from here
         self.end_headers()
 
-def run_http_server():
-    server_address = ('', 80)
+def run_http_server(PORT):
+    server_address = ('', PORT)
     httpd = HTTPServer(server_address, MyHTTPHandler)
     httpd.serve_forever()

@@ -1,3 +1,4 @@
+import argparse
 import os
 import subprocess
 import threading
@@ -95,15 +96,29 @@ def main_program():
     check_version()
     start_firefox()
 
-    PORT = 80
+    PORT = 8081
     setup_zeroconf(PORT)
 
-    http_server_thread = threading.Thread(target=run_http_server)
+    http_server_thread = threading.Thread(target=run_http_server,args=(PORT,))
     http_server_thread.start()
 
     while True:
         time.sleep(100)
 
 if __name__ == "__main__":
-    with daemon.DaemonContext():
+    parser = argparse.ArgumentParser(description='Run the program.')
+    parser.add_argument('--daemon', action='store_true', help='Run as daemon')
+
+    args = parser.parse_args()
+
+  if args.daemon:
+        # Run as a daemon
+        with daemon.DaemonContext(
+            working_directory=os.getcwd(),
+            stdout=open("stdout.log", "w+"),
+            stderr=open("stderr.log", "w+")
+        ):
+            main_program()
+    else:
+        # Run normally
         main_program()
