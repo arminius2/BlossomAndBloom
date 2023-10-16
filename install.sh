@@ -83,3 +83,9 @@ chown -R $(logname):$(id -gn $(logname)) $HOME/.blossomandbloom
 rm -rf $install_dir
 
 echo "Installation complete."
+
+# Killing all instances of the script
+pkill -f "main.py"
+
+# Killing all instances of Firefox
+killall -9 Firefox
