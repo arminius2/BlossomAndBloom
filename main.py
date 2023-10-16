@@ -4,12 +4,20 @@ import threading
 import requests
 import keyring
 import time
+import signal
+import daemon
 from util.version_check import check_version
 import youtube_stream
 from zeroconf import ServiceInfo, Zeroconf
 from httpserver import run_http_server
 
 streaming_pid = None  # Store the PID for the streaming process
+
+def handle_exit(signum, frame):
+    print("Received termination signal. Exiting...")
+    if streaming_pid is not None:
+        stop_youtube_stream()
+    os._exit(0)
 
 def check_stream_key():
     stream_key = keyring.get_password('BlossomAndBloom', 'YouTubeStream')
@@ -79,31 +87,23 @@ def setup_zeroconf(PORT):
                  PORT, 0, 0, None)
     zeroconf.register_service(wsInfo)
 
-def main():
-    #   Check internet connection first, block until it's available
+def main_program():
+    signal.signal(signal.SIGTERM, handle_exit)
+    signal.signal(signal.SIGINT, handle_exit)
+
     check_internet_connection()
-
-    #   Check if the current version matches the GitHub version
     check_version()
-
-    #   Bring up firefox viewer
     start_firefox()
 
-    PORT=80
-
-    zeroconf = Zeroconf()
-    wsInfo = ServiceInfo('_http._tcp.local.',
-                     "blossomandbloom._http._tcp.local.",
-                     PORT, 0, 0, None)
-    zeroconf.register_service(wsInfo)
+    PORT = 80
+    setup_zeroconf(PORT)
 
     http_server_thread = threading.Thread(target=run_http_server)
     http_server_thread.start()
 
     while True:
-        time.sleep(100);
-
-
+        time.sleep(100)
 
 if __name__ == "__main__":
-    main()
+    with daemon.DaemonContext():
+        main_program()

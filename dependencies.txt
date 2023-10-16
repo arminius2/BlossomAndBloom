@@ -6,3 +6,4 @@ pyobjc-framework-Cocoa
 pyobjc-framework-WebKit
 zeroconf
 httpserver
+python-daemon
