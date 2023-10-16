@@ -6,6 +6,12 @@ if [ "$EUID" -ne 0 ]; then
   exit
 fi
 
+# Killing all instances of the script
+pkill -f "main.py"
+
+# Killing all instances of Firefox
+killall -9 Firefox
+
 # Generate a temporary directory
 install_dir="/tmp/blossomandbloom-$(uuidgen)"
 
