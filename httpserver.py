@@ -4,6 +4,7 @@ import urllib.parse
 
 # Move the streaming_pid to this module
 streaming_pid = None
+streaming = False
 
 def toggle_youtube_stream():
     global streaming_pid
