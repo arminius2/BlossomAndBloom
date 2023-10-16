@@ -7,7 +7,7 @@ import time
 from util.version_check import check_version
 import youtube_stream
 from zeroconf import ServiceInfo, Zeroconf
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from httpserver import run_http_server
 
 streaming_pid = None  # Store the PID for the streaming process
 
@@ -64,16 +64,30 @@ def stop_youtube_stream():
     youtube_stream.stop_stream()
     streaming_pid = None
 
+def start_firefox():
+    subprocess.run(["killall", "-9", "Firefox"])
+    subprocess.run([
+        "/Applications/Firefox.app/Contents/MacOS/firefox",
+        "-kiosk",
+        "https://www.canva.com/design/DAFsgM9Xi3A/Hsku1dC2x83Us3gMe25DWw/view?utm_content=DAFsgM9Xi3A&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink"
+    ])
+
+def setup_zeroconf(PORT):
+    zeroconf = Zeroconf()
+    wsInfo = ServiceInfo('_http._tcp.local.',
+                         "blossomandbloom._http._tcp.local.",
+                         PORT, 0, 0, None)
+    zeroconf.register_service(wsInfo)
+
 def main():
-    # Check internet connection first, block until it's available
+    #   Check internet connection first, block until it's available
     check_internet_connection()
 
-    # Check if the current version matches the GitHub version
+    #   Check if the current version matches the GitHub version
     check_version()
 
-    # Setup canva viewer
-    subprocess.run(["killall", "-9", "Firefox"])
-    subprocess.run(["/Applications/Firefox.app/Contents/MacOS/firefox","-kiosk","https://www.canva.com/design/DAFsgM9Xi3A/Hsku1dC2x83Us3gMe25DWw/view?utm_content=DAFsgM9Xi3A&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink"])
+    #   Bring up firefox viewer
+    start_firefox()
 
     PORT=80
 
@@ -83,10 +97,10 @@ def main():
                      PORT, 0, 0, None)
     zeroconf.register_service(wsInfo)
 
-    server_address = ('', 80)
-    httpd = server_class(server_address, SimpleHTTPRequestHandler)
-    httpd.serve_forever()
-    while true:
+    http_server_thread = threading.Thread(target=run_http_server)
+    http_server_thread.start()
+
+    while True:
         time.sleep(100);
 
 
