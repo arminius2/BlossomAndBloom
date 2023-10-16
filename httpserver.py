@@ -1,5 +1,6 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import youtube_stream
+import urllib.parse
 
 # Move the streaming_pid to this module
 streaming_pid = None
@@ -32,26 +33,28 @@ def stop_youtube_stream():
     streaming_pid = None
 
 class MyHTTPHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        print("Received GET request:" + self.path)
+     def do_GET(self):
+        global streaming  # Declare streaming as global to modify it
 
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
+        # If the path is '/toggle', toggle the streaming state
+        if self.path == '/toggle':
+            streaming = not streaming
+
+            print(f"Streaming state toggled: {'ON' if streaming else 'OFF'}")
+
+            # Redirect back to the root path
+            self.send_response(303)  # 303 See Other
+            self.send_header('Location', '/')
+            self.end_headers()
         
-        if streaming_pid is None:
-            message = "Start Streaming"
+        # Otherwise, just display the state
         else:
-            message = "Stop Streaming"
-        
-        self.wfile.write(f"<html><body><a href='/toggle'>{message}</a></body></html>".encode('utf-8'))
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
 
-    def do_POST(self):
-        print("Received POST request:" + self.path)
-        self.send_response(200)
-        if self.path == "/toggle":
-            toggle_youtube_stream()
-        self.end_headers()
+            message = f"Streaming is {'ON' if streaming else 'OFF'}"
+            self.wfile.write(message.encode('utf-8'))
 
 def run_http_server(PORT):
     server_address = ('', PORT)
