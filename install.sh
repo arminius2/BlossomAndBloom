@@ -52,6 +52,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
   <array>
     <string>/usr/bin/python3</string>
     <string>$HOME/.blossomandbloom/main.py</string>
+    <string>--daemon</string>
   </array>
   <key>RunAtLoad</key>
   <true/>
