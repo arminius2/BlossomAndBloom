@@ -7,3 +7,6 @@ pyobjc-framework-WebKit
 zeroconf
 httpserver
 python-daemon
+google-auth==1.35.0
+google-auth-oauthlib==0.4.6
+google-api-python-client==2.21.0
