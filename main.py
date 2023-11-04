@@ -114,9 +114,20 @@ class YouTubeStreamManager:
         cls.check_stream_status(youtube_client)
 
 class YouTubeCredentialsManager:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(YouTubeCredentialsManager, cls).__new__(cls)
+            # Initialize the object here if needed
+            cls._instance.__initialized = False
+        return cls._instance
+
     def __init__(self, service_name='BlossomAndBloom'):
-        self.service_name = service_name
-        self.credentials_file_path = 'credentials.json'
+        if not self.__initialized:
+            self.service_name = service_name
+            self.credentials_file_path = 'credentials.json'
+            self.__initialized = True
 
     def get_api_key(self):
         return keyring.get_password(self.service_name, 'YouTubeAPIKey')
@@ -196,7 +207,6 @@ def setup_zeroconf(PORT):
 #   Start / Stop Local Stream
 
 def start_stream():
-    stream_manager = YouTubeStreamManager()     
     stream_key = keyring.get_password("BlossomAndBloom", "YouTubeStream")
     ffmpeg_command = [
         'ffmpeg',
@@ -258,9 +268,8 @@ def get_youtube_client():
     client_secrets_file = "credentials.json"
 
     # Write Credentials to file
-    credentials_manager = YouTubeCredentialsManager()
-    credentials_manager.credentials_file_path = client_secrets_file
-    credentials_manager.generate_credentials_file()
+    YouTubeCredentialsManager().credentials_file_path = client_secrets_file
+    YouTubeCredentialsManager().generate_credentials_file()
 
     # Check if credentials exist
     credentials = Credentials.from_authorized_user_file("credentials.json", ["https://www.googleapis.com/auth/youtube.force-ssl"])    
