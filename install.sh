@@ -102,7 +102,7 @@ api_key=$(keyring get BlossomAndBloom YouTubeAPIKey)
 if [ -z "$api_key" ]; then
   echo "No YouTube API key is set."
   read -p "Enter your YouTube API key: " api_key
-  keyring set BlossomAndBloom YouTubeAPIKey "$api_key"
+  python3 -c "import keyring; keyring.set_password('BlossomAndBloom', 'YouTubeAPIKey', '$api_key')"
 fi
 
 # Check for OAuth 2.0 Client ID
@@ -110,7 +110,7 @@ oauth_client_id=$(keyring get BlossomAndBloom YouTubeClientID)
 if [ -z "$oauth_client_id" ]; then
   echo "No YouTube OAuth 2.0 Client ID is set."
   read -p "Enter your YouTube OAuth 2.0 Client ID: " oauth_client_id
-  keyring set BlossomAndBloom YouTubeClientID "$oauth_client_id"
+  python3 -c "import keyring; keyring.set_password('BlossomAndBloom', 'YouTubeClientID', '$oauth_client_id')"
 fi
 
 # Check for OAuth 2.0 Client Secret
@@ -118,9 +118,8 @@ oauth_client_secret=$(keyring get BlossomAndBloom YouTubeClientSecret)
 if [ -z "$oauth_client_secret" ]; then
   echo "No YouTube OAuth 2.0 Client Secret is set."
   read -p "Enter your YouTube OAuth 2.0 Client Secret: " oauth_client_secret
-  keyring set BlossomAndBloom YouTubeClientSecret "$oauth_client_secret"
+  python3 -c "import keyring; keyring.set_password('BlossomAndBloom', 'YouTubeClientSecret', '$oauth_client_secret')"
 fi
-
 
 # Change ownership of the entire installation to the non-root user
 chown -R $(logname):$(id -gn $(logname)) $HOME/.blossomandbloom
