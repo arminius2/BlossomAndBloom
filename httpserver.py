@@ -24,14 +24,6 @@ def start_youtube_stream():
     stream_thread.start()
     streaming_pid = stream_thread.ident
 
-    # Wait for 5 seconds
-    time.sleep(5)
-
-    # Fetch and print the streaming URL
-    youtube = youtube_stream.get_youtube_client()  # Make sure you have this function in youtube_stream.py
-    print("Stream URL: " + youtube_stream.get_streaming_url(youtube))
-
-
 def stop_youtube_stream():
     global streaming_pid
     if streaming_pid is None:
