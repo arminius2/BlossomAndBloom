@@ -26,11 +26,13 @@ class MyHTTPHandler(BaseHTTPRequestHandler):
      def do_GET(self):
         global streaming  # Declare streaming as globyhh   al to modify it
 
+        print(f"[HTTPServer] incoming GET " + self.path)
+
         # If the path is '/toggle', toggle the streaming state
         if self.path == '/toggle':
             streaming = not streaming
 
-            print(f"Streaming state toggled: {'ON' if streaming else 'OFF'}")
+            print(f"[HTTPServer] Streaming state toggled: {'ON' if streaming else 'OFF'}")
 
             # Redirect back to the root path
             self.send_response(303)  # 303 See Other
@@ -43,6 +45,7 @@ class MyHTTPHandler(BaseHTTPRequestHandler):
         
         # Otherwise, just display the state
         else:
+            print(f"[HTTPServer] Displaying state...")
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
